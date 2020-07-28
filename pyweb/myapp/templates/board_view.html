@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>게시판</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="static/css/custom-bs.css">
+    <link rel="stylesheet" href="static/css/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="static/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="static/fonts/icomoon/style.css">
+    <link rel="stylesheet" href="static/fonts/line-icons/style.css">
+    <link rel="stylesheet" href="static/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="static/css/animate.min.css">
+    <link rel="stylesheet" href="static/css/quill.snow.css">
+
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="static/css/style.css">    
+	    <style>
+		table {
+	  		width: 100%;
+	  		border-collapse: collapse;
+	  	}
+	  	th {
+	  		font-style: bold;
+	  	}
+	  	th, td {
+	    	padding: 5px
+	  	}
+    </style>
+  </head>
+  <body id="top">
+
+  <div id="overlayer"></div>
+  <div class="loader">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+    
+
+<div class="site-wrap">
+
+    <div class="site-mobile-menu site-navbar-target">
+      <div class="site-mobile-menu-header">
+        <div class="site-mobile-menu-close mt-3">
+          <span class="icon-close2 js-menu-toggle"></span>
+        </div>
+      </div>
+      <div class="site-mobile-menu-body"></div>
+    </div> <!-- .site-mobile-menu -->
+    
+
+    <!-- NAVBAR -->
+       <header class="site-navbar mt-3">
+      <div class="container-fluid">
+        <div class="row align-items-center">
+          <div class="site-logo col-6"><a href="index">Python Web Project</a></div>
+
+          <nav class="mx-auto site-navigation">
+            <ul class="site-menu js-clone-nav d-none d-xl-block ml-0 pl-0">
+              <li><a href="index" class="nav-link active">Home</a></li>
+              <li><a href="about">소개</a></li>
+              <li class="has-children">
+                <a href="#">분석</a>
+                <ul class="dropdown" style="width: 300px;">
+                  <li><a href="wordcloud">워드클라우드분석</a></li>
+                  <li><a href="youtube_data">유튜브 관련 데이터 분석</a></li>
+                  <li><a href="upload_date&views">동영상 등록일과 조회수 분석</a></li>
+                  <li><a href="jaehong">조회수 상관분석</a></li>
+                </ul>
+              </li>
+              <li><a href="board">게시판</a></li>
+            </ul>
+          </nav>
+          
+
+        </div>
+      </div>
+    </header>
+
+    <!-- HOME -->
+    <section class="section-hero overlay inner-page bg-image" style="background-image: url('static/images/hero_1.jpg');" id="home-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-7">
+            <h1 class="text-white font-weight-bold">글 보기</h1>
+            <div class="custom-breadcrumbs">
+              <a href="index"><strong>HOME</strong></a><span class="mx-2 slash">/</span>
+              <a href="board"><strong>게시판</strong></a><span class="mx-2 slash">/</span>
+              
+              <span class="text-white"><strong>글 보기</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+     <section class="site-section">
+      <div class="container">
+
+ 		<div class="row mb-5">
+          <div class="col-lg-12">
+            <form class="p-4 p-md-5 border rounded" method="post" id="board_write_frm" action="board_save">{% csrf_token %}
+              <div class="row form-group" style="padding-left: 10px;">
+                <h2>{{board_view_datas.title}}</h2>
+              </div>
+			
+      	  	<div class="row form-group">
+      	        <div class="col-md-6 mb-3 mb-md-0">
+                  	닉네임 : {{board_view_datas.name}} ({{board_view_datas.ip|slice:"7"}})
+              
+                </div>
+                <div class="col-md-6" style="text-align: right;">
+					{{board_view_datas.date|date:"Y-m-d-H:i:s"}} / 조회수 : {{board_view_datas.views}}
+					<br>
+					<a href="javascript:board_passwd_check_dialog(1);">수정</a>&nbsp;
+		           	<a href="javascript:board_passwd_check_dialog(2);">삭제</a>
+		           	
+				    <div id="board_passwd_check_dialog" title="Check" style="display: none;">
+						<div style="text-align: center;">비밀번호를 입력하세요. <br>
+							<input type="password" placeholder="PASSWORD" name="board_passwd" id="board_passwd" class="text ui-widget-content ui-corner-all" onkeydown="spacebarDisable();">
+							<input type="hidden" value="{{board_view_datas.board_id}}" id="board_no">
+							<br>
+						<div id="board_passwd_check_div" style="color: red;">
+						</div>
+					</div>
+					
+					</div>
+				      
+            		
+                </div>
+             </div>
+        	<hr>	
+              <div class="row form-group" style="padding-left: 10px; height: 500px;">
+				{{board_view_datas.content}}
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <!-- 댓글 -->
+        <div class="row mb-5">
+          <div class="col-lg-12">
+            <form class="p-4 p-md-5 border rounded" method="post" id="comment_frm" action="comment_save">{% csrf_token %}
+      	  	<div class="row form-group">
+				<table style="width: 100%;">
+			
+				{% for c in board_comment_datas %}
+				<tr>
+				<td width="20%">{{c.name}} ({{c.ip|slice:"7"}})</td>
+				<td width="50%">{{c.content}}</td>
+				<td>{{c.date|date:"Y-m-d"}}</td>&nbsp;
+				<td width="10%" style="text-align: right;">	<a href="javascript:comment_passwd_check_dialog({{c.board_comment_id}});">삭제</a></td>
+				</tr>
+				{% endfor %}
+				
+				<tr style="border-top: 1px solid #444444;">
+				<td style="width: 30%">
+				<br>
+				<div class="row form-group">
+	      	        <div class="col-md-6 mb-3 mb-md-0" style="padding-left: 0px;">
+						<input type="text" id="comment_name" name="comment_name" maxlength="8" class="form-control" placeholder="닉네임" onkeydown="spacebarDisable();">
+	                </div>
+	                <div class="col-md-6">
+			        	<input type="password" id="comment_passwd" name="comment_passwd" maxlength="4" class="form-control" placeholder="비밀번호" onkeydown="spacebarDisable();">
+	                </div>
+	             </div>
+				</td>
+				<td colspan="2">
+				<br>
+				<div class="row form-group" style="padding-left: 20px;">
+	      	     	<a href="javascript:insert_comment();">작성</a>
+	      	     	<input type="hidden" value="{{board_view_datas.board_id}}" id="board_no2" name="board_no2">
+	             </div>
+				<td></td>
+				
+		        </tr>
+		        <tr>
+		        <td colspan="3">
+				<div class="row form-group">
+					<textarea id="comment" name="comment" rows="1" maxlength="95" class="form-control" style="resize: none;" placeholder="댓글 내용"></textarea>
+				</div>
+		        </td>      
+		        <td></td>
+				</tr>
+				</table>      	        
+              
+              
+                
+				    <div id="comment_passwd_check_dialog" title="Check" style="display: none;">
+						<div style="text-align: center;">비밀번호를 입력하세요. <br>
+							<input type="password" placeholder="PASSWORD" name="comment_passwd2" id="comment_passwd" class="text ui-widget-content ui-corner-all" onkeydown="spacebarDisable();">
+							<input type="hidden" value="10" id="comment_no">
+							
+							
+							<br>
+						<div id="comment_passwd_check_div" style="color: red;">
+						</div>
+					</div>
+					</div>
+					
+				    
+            		
+                </div>
+            </form>
+          </div>
+        </div>
+        
+         
+        <div class="row align-items-center mb-5">
+          
+          <div class="col-lg-4 ml-auto">
+            <div class="row">
+            <div class="col-6">
+              </div>
+              <div class="col-6">
+              <a href="board" class="btn btn-block btn-light btn-md" style="border-color: black">목록으로</a>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </section>
+    
+  <footer class="site-footer">
+      <div class="container">
+      	<div style="text-align: center;">
+            <h3>재홍 유진 지훈 준혜 대희 팀 </h3>
+      	</div>
+        <div class="row text-center">
+          <div class="col-12">
+            <p class="copyright"><small>
+            Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved <i class="icon-heart text-danger" aria-hidden="true"></i>
+            </small></p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  
+  </div>
+
+    <!-- SCRIPTS -->
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/bootstrap.bundle.min.js"></script>
+    <script src="static/js/isotope.pkgd.min.js"></script>
+    <script src="static/js/stickyfill.min.js"></script>
+    <script src="static/js/jquery.fancybox.min.js"></script>
+    <script src="static/js/jquery.easing.1.3.js"></script>
+    
+    <script src="static/js/jquery.waypoints.min.js"></script>
+    <script src="static/js/jquery.animateNumber.min.js"></script>
+    <script src="static/js/owl.carousel.min.js"></script>
+    <script src="static/js/quill.min.js"></script>
+	<script src="static/js/jquery-ui-1.12.1/jquery-ui.js"></script>
+    
+    
+    <script src="static/js/bootstrap-select.min.js"></script>
+    
+    <script src="static/js/custom.js"></script>
+
+   
+     
+  </body>
+</html>

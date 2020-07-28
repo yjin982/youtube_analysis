@@ -1,0 +1,208 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>유튜브 분석</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <meta name="author" content="Free-Template.co" />
+    <link rel="shortcut icon" href="ftco-32x32.png">
+    
+    <link rel="stylesheet" href="static/css/custom-bs.css">
+    <link rel="stylesheet" href="static/css/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="static/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="static/fonts/icomoon/style.css">
+    <link rel="stylesheet" href="static/fonts/line-icons/style.css">
+    <link rel="stylesheet" href="static/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="static/css/animate.min.css">
+	
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="static/css/style.css">  
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.js"></script>
+    <script type="text/javascript">
+			$(document).ready(function(){
+				$('#btnGen').click(function(){
+					let msg = $('#new_keyword').val()
+					
+					$("#new_title").empty()
+					$("#eval").empty()
+					$.ajax({
+						url:'gentitle',
+						type:'get',
+						data:{'keyword':msg},
+						dataType:'json',
+						success:function(data){
+							$('#new_title').text(data.resultTitle)
+							$('#eval').text('loss : ' + data.loss + '            accuracy : ' + data.acc)						
+						},
+						error:function(){
+							$('#new_title').text('ERROR!!!🤦‍♂️🤦‍♂️🤦')
+						}
+					})
+				})
+				$('#key_ex1').click(function(){
+					keyex1 = $('#key_ex1').text()
+					//alert(keyex1)
+					$('#new_keyword').attr('value', keyex1)
+				})
+				$('#key_ex2').click(function(){
+					keyex2 = $('#key_ex2').text()
+					//alert(keyex2)
+					$('#new_keyword').attr('value', keyex2)
+				})
+				$('#key_ex3').click(function(){
+					keyex3 = $('#key_ex3').text()
+					//alert(keyex3)
+					$('#new_keyword').attr('value', keyex3)
+				})
+				$('#key_ex4').click(function(){
+					keyex4 = $('#key_ex4').text()
+					//alert(keyex4)
+					$('#new_keyword').attr('value', keyex4)
+				})
+			})
+		</script>     
+  </head>
+  <body id="top">
+
+  <div id="overlayer"></div>
+  <div class="loader">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+    
+
+<div class="site-wrap">
+
+    <div class="site-mobile-menu site-navbar-target">
+      <div class="site-mobile-menu-header">
+        <div class="site-mobile-menu-close mt-3">
+          <span class="icon-close2 js-menu-toggle"></span>
+        </div>
+      </div>
+      <div class="site-mobile-menu-body"></div>
+    </div> <!-- .site-mobile-menu -->
+    
+
+    <!-- NAVBAR -->
+     <header class="site-navbar mt-3">
+      <div class="container-fluid">
+        <div class="row align-items-center">
+          <div class="site-logo col-6"><a href="index">Python Web Project</a></div>
+
+          <nav class="mx-auto site-navigation">
+            <ul class="site-menu js-clone-nav d-none d-xl-block ml-0 pl-0">
+              <li><a href="index" class="nav-link active">Home</a></li>
+              <li><a href="about">소개</a></li>
+              <li class="has-children">
+                <a href="#">분석</a>
+                <ul class="dropdown" style="width: 300px;">
+                  <li><a href="wordcloud">워드클라우드분석</a></li>
+                  <li><a href="youtube_data">유튜브 관련 데이터 분석</a></li>
+                  <li><a href="upload_date&views">동영상 등록일과 조회수 분석</a></li>
+                  <li><a href="jaehong">조회수 상관분석</a></li>
+                </ul>
+              </li>
+              <li><a href="board">게시판</a></li>
+            </ul>
+          </nav>
+          
+
+        </div>
+      </div>
+    </header>
+
+
+    <!-- HOME -->
+    <section class="home-section section-hero overlay bg-image" style="background-image: url('static/images/hero_1.jpg');" id="home-section">
+
+      <div class="container">
+        <div class="row align-items-center justify-content-center">
+          <div class="col-md-12">
+            <div class="mb-5 text-center">
+              <h1 class="text-white font-weight-bold">YOUTUBE 영상제목을 이용해 <br>새로운 동영상 제목을 생성</h1>
+              <p>2017~2018 인기동영상 중 조회수 10만이상 동영상들의 제목을 분석</p>
+            </div>
+            <form method="post" class="search-jobs-form">	{%csrf_token%}
+              <div class="row mb-5">
+              <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0"></div>
+                <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
+                  <input type="text" class="form-control form-control-lg" placeholder="주제어를 입력해주세요." id="new_keyword" width="1000">
+                </div>
+               
+                <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
+                  <input type="button" id="btnGen" class="btn btn-primary btn-lg btn-block text-white btn-search" value="제목 생성">
+                </div>
+                <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0"></div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 popular-keywords" align="center">
+                  <h3>가장 많이 들어간 단어 예시:</h3>
+                  <ul class="keywords list-unstyled m-0 p-0">
+                    <li><a href="#" id="key_ex1">방탄소년단</a></li>
+                    <li><a href="#" id="key_ex2">레드벨벳</a></li>
+                    <li><a href="#" id="key_ex3">워너원</a></li>
+                    <li><a href="#" id="key_ex4">고양이</a></li>
+                  </ul>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+
+    </section>
+    
+    <section class="py-5 bg-image overlay-primary fixed overlay" id="next" style="background-image: url('static/images/hero_1.jpg');">
+      <div class="container">
+        <div class="row mb-5 justify-content-center">
+          <div class="col-md-7 text-center">
+            <h3 id="new_title" class="section-title mb-2 text-white" ></h3>
+            <p id="eval" class="lead text-white"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+
+   <footer class="site-footer">
+      <div class="container">
+      	<div style="text-align: center;">
+            <h3>재홍 유진 지훈 준혜 대희 팀 </h3>
+      	</div>
+        <div class="row text-center">
+          <div class="col-12">
+            <p class="copyright"><small>
+            Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved <i class="icon-heart text-danger" aria-hidden="true"></i>
+            </small></p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  
+  </div>
+
+    <!-- SCRIPTS -->
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/bootstrap.bundle.min.js"></script>
+    <script src="static/js/isotope.pkgd.min.js"></script>
+    <script src="static/js/stickyfill.min.js"></script>
+    <script src="static/js/jquery.fancybox.min.js"></script>
+    <script src="static/js/jquery.easing.1.3.js"></script>
+    
+    <script src="static/js/jquery.waypoints.min.js"></script>
+    <script src="static/js/jquery.animateNumber.min.js"></script>
+    <script src="static/js/owl.carousel.min.js"></script>
+    
+    <script src="static/js/bootstrap-select.min.js"></script>
+    
+    <script src="static/js/custom.js"></script>
+
+     
+  </body>
+</html>
